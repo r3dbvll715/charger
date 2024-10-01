@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado dos Carregadores</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+        }
+        h1 {
+            font-size: 36px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #e0e0e0;
+        }
+        .container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .status-set {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .status-set:hover {
+            transform: translateY(-10px);
+        }
+        .statusCircle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #ff4c4c;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 76, 76, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .toggleButton, .languageButton {
+            padding: 14px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #fff;
+            color: #1f1c2c;
+            border: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        .toggleButton:hover, .languageButton:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+        }
+        h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #f8f8f8;
+        }
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .statusCircle {
+                width: 120px;
+                height: 120px;
+                font-size: 18px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .toggleButton, .languageButton {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            .container {
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="mainTitle">Estado dos Carregadores</h1>
+    <div class="container">
+        <div class="status-set">
+            <h3 id="charger1Title">Carregador 1</h3>
+            <div id="statusCircle1" class="statusCircle">Ocupado</div>
+            <button id="toggleButton1" class="toggleButton">Mudar estado</button>
+        </div>
+        <div class="status-set">
+            <h3 id="charger2Title">Carregador 2</h3>
+            <div id="statusCircle2" class="statusCircle">Ocupado</div>
+            <button id="toggleButton2" class="toggleButton">Mudar estado</button>
+        </div>
+    </div>
+    <button id="languageButton" class="languageButton">English</button>
+
+    <script>
+        // Text for different languages
+        const translations = {
+            en: {
+                mainTitle: 'Charger Status',
+                charger1: 'Charger 1',
+                charger2: 'Charger 2',
+                occupied: 'Occupied',
+                available: 'Available',
+                toggleStatus: 'Change Status',
+                changeLanguage: 'Portuguese'
+            },
+            pt: {
+                mainTitle: 'Estado dos Carregadores',
+                charger1: 'Carregador 1',
+                charger2: 'Carregador 2',
+                occupied: 'Ocupado',
+                available: 'Disponível',
+                toggleStatus: 'Mudar estado',
+                changeLanguage: 'Inglês'
+            }
+        };
+
+        let currentLanguage = 'pt'; // Default language is Portuguese
+
+        // Function to toggle the language
+        function toggleLanguage() {
+            const newLanguage = currentLanguage === 'pt' ? 'en' : 'pt';
+            const texts = translations[newLanguage];
+
+            // Update the text content with the new language
+            document.getElementById('mainTitle').textContent = texts.mainTitle;
+            document.getElementById('charger1Title').textContent = texts.charger1;
+            document.getElementById('charger2Title').textContent = texts.charger2;
+            document.getElementById('toggleButton1').textContent = texts.toggleStatus;
+            document.getElementById('toggleButton2').textContent = texts.toggleStatus;
+            document.getElementById('languageButton').textContent = texts.changeLanguage;
+
+            // Update the status circles text (if already toggled)
+            const statusCircle1 = document.getElementById('statusCircle1');
+            const statusCircle2 = document.getElementById('statusCircle2');
+
+            if (statusCircle1.textContent === translations[currentLanguage].occupied) {
+                statusCircle1.textContent = texts.occupied;
+            } else {
+                statusCircle1.textContent = texts.available;
+            }
+
+            if (statusCircle2.textContent === translations[currentLanguage].occupied) {
+                statusCircle2.textContent = texts.occupied;
+            } else {
+                statusCircle2.textContent = texts.available;
+            }
+
+            // Set the new language
+            currentLanguage = newLanguage;
+        }
+
+        // Language change button
+        document.getElementById('languageButton').addEventListener('click', toggleLanguage);
+
+        // Status toggle function
+        function createToggleFunction(statusCircle) {
+            let isOccupied = true;
+            return () => {
+                if (isOccupied) {
+                    statusCircle.style.backgroundColor = '#4caf50';
+                    statusCircle.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.7)';
+                    statusCircle.textContent = translations[currentLanguage].available;
+                    isOccupied = false;
+                } else {
+                    statusCircle.style.backgroundColor = '#ff4c4c';
+                    statusCircle.style.boxShadow = '0 0 20px rgba(255, 76, 76, 0.7)';
+                    statusCircle.textContent = translations[currentLanguage].occupied;
+                    isOccupied = true;
+                }
+            };
+        }
+
+        // Apply the toggle function to both chargers
+        const statusCircle1 = document.getElementById('statusCircle1');
+        const toggleButton1 = document.getElementById('toggleButton1');
+        toggleButton1.addEventListener('click', createToggleFunction(statusCircle1));
+
+        const statusCircle2 = document.getElementById('statusCircle2');
+        const toggleButton2 = document.getElementById('toggleButton2');
+        toggleButton2.addEventListener('click', createToggleFunction(statusCircle2));
+    </script>
+</body>
+</html>
