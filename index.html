@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estado dos Carregadores</title>
+<style>
+body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; background: #f4f4f4; }
+h1 { margin-bottom: 20px; }
+.status-set { display: inline-block; margin: 20px; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.statusCircle { width: 120px; height: 120px; line-height: 120px; border-radius: 50%; color: white; font-size: 18px; margin: auto; cursor: pointer; }
+.occupied { background-color: red; }
+.available { background-color: green; }
+button { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1 id="title">Estado dos Carregadores</h1>
+<div class="status-set">
+<h3>Carregador 1</h3>
+<div id="statusCircle1" class="statusCircle" data-status="occupied"></div>
+</div>
+<div class="status-set">
+<h3>Carregador 2</h3>
+<div id="statusCircle2" class="statusCircle" data-status="occupied"></div>
+</div>
+<br>
+<button id="languageButton">English</button>
+<script>
+let currentLanguage = "pt";
+const translations = {
+    en: { chargerPrefix: "Charger", occupied: "Occupied", available: "Available", changeLanguage: "Português" },
+    pt: { chargerPrefix: "Carregador", occupied: "Ocupado", available: "Disponível", changeLanguage: "English" }
+};
+const statusCircle1 = document.getElementById('statusCircle1');
+const statusCircle2 = document.getElementById('statusCircle2');
+const languageButton = document.getElementById('languageButton');
+function updateTexts() {
+    const texts = translations[currentLanguage];
+    document.querySelectorAll('.status-set h3').forEach((title, index) => {
+        title.textContent = `${texts.chargerPrefix} ${index + 1}`;
+    });
+    document.querySelectorAll('.statusCircle').forEach(circle => {
+        circle.textContent = circle.dataset.status === 'occupied' ? texts.occupied : texts.available;
+        circle.className = `statusCircle ${circle.dataset.status}`;
+    });
+    languageButton.textContent = texts.changeLanguage;
+}
+async function saveState() {
+    await fetch("update.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            language: currentLanguage,
+            statuses: [
+                statusCircle1.dataset.status,
+                statusCircle2.dataset.status
+            ]
+        })
+    });
+}
+function toggleLanguage() {
+    currentLanguage = currentLanguage === 'pt' ? 'en' : 'pt';
+    updateTexts();
+    saveState();
+}
+function createToggleFunction(statusCircle) {
+    return () => {
+        statusCircle.dataset.status = (statusCircle.dataset.status === 'occupied') ? 'available' : 'occupied';
+        updateTexts();
+        saveState();
+    };
+}
+async function loadState() {
+    try {
+        const res = await fetch("status.json?nocache=" + Date.now());
+        const data = await res.json();
+        currentLanguage = data.language;
+        statusCircle1.dataset.status = data.statuses[0];
+        statusCircle2.dataset.status = data.statuses[1];
+        updateTexts();
+    } catch(e) { console.error("Erro ao carregar estado:", e); }
+}
+languageButton.addEventListener("click", toggleLanguage);
+statusCircle1.addEventListener("click", createToggleFunction(statusCircle1));
+statusCircle2.addEventListener("click", createToggleFunction(statusCircle2));
+loadState();
+setInterval(loadState, 5000);
+</script>
+</body>
+</html>
